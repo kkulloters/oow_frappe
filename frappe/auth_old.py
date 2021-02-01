@@ -21,7 +21,6 @@ from frappe.twofactor import (should_run_2fa, authenticate_for_2factor,
 from frappe.website.utils import get_home_page
 
 from six.moves.urllib.parse import quote
-from on_our_way_app.on_our_way_web.utils.helper import jwt_encoder, get_role
 
 
 class HTTPRequest:
@@ -149,9 +148,7 @@ class LoginManager:
 
 	def get_user_info(self, resume=False):
 		self.info = frappe.db.get_value("User", self.user,
-			["user_type", "first_name", "last_name", "user_image", "mobile_no"], as_dict=1)
-		self.role = get_role(self.user)
-		self.secret = frappe.get_doc("User", self.user)
+			["user_type", "first_name", "last_name", "user_image"], as_dict=1)
 
 		self.user_type = self.info.user_type
 
@@ -179,15 +176,7 @@ class LoginManager:
 				frappe.local.response["home_page"] = "/desk"
 
 		if not resume:
-			frappe.response["email"] = self.user
-			frappe.response["user"] = {
-								"full_name":self.full_name,
-								"phone_number": self.info.mobile_no,
-								"first_name": self.info.first_name,
-								"last_name": self.info.last_name
-						}
-			frappe.response["role"] = self.role
-			frappe.response["token"] = jwt_encoder(self.user)
+			frappe.response["full_name"] = self.full_name
 
 		# redirect information
 		redirect_to = frappe.cache().hget('redirect_after_login', self.user)

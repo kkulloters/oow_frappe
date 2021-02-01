@@ -13,7 +13,6 @@ import frappe.client
 import frappe.handler
 from frappe import _
 from frappe.utils.response import build_response
-from on_our_way_app.on_our_way_web.utils.jwt import validate_jwt_token
 
 def handle():
 	"""
@@ -163,15 +162,11 @@ def validate_auth():
 		frappe.throw(_('Invalid Authorization headers, add a token with a prefix from one of the following: {0}.').format(VALID_AUTH_PREFIX_STRING), frappe.InvalidAuthorizationHeader)
 
 	if authorization_type == "bearer":
+		validate_oauth(authorization_header)
+	elif authorization_type in VALID_AUTH_PREFIX_TYPES:
 		validate_auth_via_api_keys(authorization_header)
 	else:
-		frappe.throw(_("Cannot use '{}' Authorization Type".format(authorization_type.title())))
-		# validate_oauth(authorization_header)
-	# elif authorization_type in VALID_AUTH_PREFIX_TYPES:
-	# if authorization_type in VALID_AUTH_PREFIX_TYPES:
-	# 	validate_auth_via_api_keys(authorization_header)
-	# else:
-		# frappe.throw(_('Invalid Authorization Type {0}, must be one of {1}.').format(authorization_type, VALID_AUTH_PREFIX_STRING), frappe.InvalidAuthorizationPrefix)
+		frappe.throw(_('Invalid Authorization Type {0}, must be one of {1}.').format(authorization_type, VALID_AUTH_PREFIX_STRING), frappe.InvalidAuthorizationPrefix)
 
 
 def validate_oauth(authorization_header):
@@ -224,12 +219,6 @@ def validate_auth_via_api_keys(authorization_header):
 		elif auth_type.lower() == 'token':
 			api_key, api_secret = auth_token.split(":")
 			validate_api_key_secret(api_key, api_secret, authorization_source)
-
-		elif auth_type.lower() == 'bearer':
-			data = validate_jwt_token(authorization_header[1])
-			api_key, api_secret = data['key'], data['secret']
-			validate_api_key_secret(api_key, api_secret, authorization_source)
-
 	except binascii.Error:
 		frappe.throw(_("Failed to decode token, please provide a valid base64-encoded token."), frappe.InvalidAuthorizationToken)
 	except (AttributeError, TypeError, ValueError):
