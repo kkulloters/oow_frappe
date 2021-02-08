@@ -117,7 +117,7 @@ class StripeSettings(Document):
 					reference_doc = frappe.get_doc(self.data.reference_doctype, self.data.reference_docname)
 					custom_redirect_to = reference_doc.run_method("on_payment_authorized", self.flags.status_changed_to)
 					# set Sales Invoice status: `Paid But Uncaptured`
-					frappe.db.sql("UPDATE `tabSales Invoice` SET status='Paid But Uncaptured' WHERE name='{}'".format(reference_doc.reference_name))
+					frappe.db.sql("UPDATE `tabSales Invoice` SET status='On Hold' WHERE name='{}'".format(reference_doc.reference_name))
 					frappe.db.commit()
 				except Exception:
 					frappe.log_error(frappe.get_traceback())
