@@ -76,9 +76,23 @@ class StripeSettings(Document):
 	def create_charge_on_stripe(self):
 		import stripe
 		try:
-			charge = stripe.Charge.create(amount=cint(flt(self.data.amount)*100), currency=self.data.currency, source=self.data.stripe_token_id, description=self.data.description, receipt_email=self.data.payer_email)
-
-			if charge.captured == True:
+			# charge = stripe.Charge.create(
+			# 		amount=cint(flt(self.data.amount)*100), 
+			# 		currency=self.data.currency, 
+			# 		source=self.data.stripe_token_id, 
+			# 		description=self.data.description, 
+			# 		receipt_email=self.data.payer_email,
+			# 		capture_method='manual'
+			# 	)
+			charge = stripe.Charge.create(
+						amount=cint(flt(self.data.amount)*100),
+						currency=self.data.currency,
+						description=self.data.description,
+						source=self.data.stripe_token_id,
+						capture=False,
+						receipt_email=self.data.payer_email
+					)
+			if charge.paid == True and charge.captured == False:
 				self.integration_request.db_set('status', 'Completed', update_modified=False)
 				self.flags.status_changed_to = "Completed"
 
@@ -101,7 +115,11 @@ class StripeSettings(Document):
 				custom_redirect_to = None
 				try:
 					custom_redirect_to = frappe.get_doc(self.data.reference_doctype,
-						self.data.reference_docname).run_method("on_payment_authorized", self.flags.status_changed_to)
+						self.data.reference_docname)
+					custom_redirect_to.run_method("on_payment_authorized", self.flags.status_changed_to)
+					# set Sales Invoice status: `Paid But Uncaptured`
+					frappe.db.sql("UPDATE `tabSales Invoice` SET status='Paid But Uncaptured' WHERE name='{}'".format(custom_redirect_to.reference_name))
+					frappe.db.commit()
 				except Exception:
 					frappe.log_error(frappe.get_traceback())
 
