@@ -75,6 +75,7 @@ class StripeSettings(Document):
 
 	def create_charge_on_stripe(self):
 		import stripe
+		from on_our_way_app.on_our_way_web.stripe.stripe import get_custid
 		try:
 			# charge = stripe.Charge.create(
 			# 		amount=cint(flt(self.data.amount)*100), 
@@ -84,26 +85,55 @@ class StripeSettings(Document):
 			# 		receipt_email=self.data.payer_email,
 			# 		capture_method='manual'
 			# 	)
+			cust_id = self.create_customer()
+			print(cust_id, get_custid(cust_id))
 			charge = stripe.Charge.create(
 						amount=cint(flt(self.data.amount)*100),
 						currency=self.data.currency,
 						description=self.data.description,
-						source=self.data.stripe_token_id,
 						capture=False,
-						receipt_email=self.data.payer_email
+						customer=get_custid(cust_id)
 					)
+			print(charge.id)
 			if charge.paid == True and charge.captured == False:
 				self.integration_request.db_set('status', 'Completed', update_modified=False)
 				self.flags.status_changed_to = "Completed"
+
+				# update booking
+				si = frappe.db.get_value(self.data.reference_doctype, {"name": self.data.reference_docname},'reference_name')
+				frappe.db.sql("UPDATE `tabSales Invoice` SET trans_id='{}' WHERE name='{}'".format(charge.id, si))
+				frappe.db.commit()
 
 			else:
 				frappe.log_error(charge.failure_message, 'Stripe Payment not completed')
 
 		except Exception:
-			frappe.log_error(frappe.get_traceback())
+				frappe.log_error(frappe.get_traceback())
 
 		return self.finalize_request()
 
+	def create_customer(self):
+		import stripe
+		from on_our_way_app.on_our_way_web.stripe.stripe import validate_cust_id, generate_custid
+		try:
+			cust_id = validate_cust_id(self.data.payer_email)
+			if not cust_id:
+				customer = stripe.Customer.create(
+							source=self.data.stripe_token_id,
+							email=self.data.payer_email,
+							name=self.data.payer_name,
+						)
+				print(generate_custid(customer.id))
+				si = frappe.db.get_value(self.data.reference_doctype, {"name": self.data.reference_docname}, 'reference_name')
+
+				frappe.db.sql("UPDATE `tabCustomer` SET stripe_cust_id='{}' WHERE name='{}'".format(generate_custid(customer.id),self.data.payer_name))
+				frappe.db.commit()
+				return customer.id
+			else:
+				return cust_id
+
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), "Failed to add customer")
 
 	def finalize_request(self):
 		redirect_to = self.data.get('redirect_to') or None
@@ -119,6 +149,7 @@ class StripeSettings(Document):
 					# set Sales Invoice status: `Paid But Uncaptured`
 					frappe.db.sql("UPDATE `tabSales Invoice` SET status='On Hold' WHERE name='{}'".format(reference_doc.reference_name))
 					frappe.db.commit()
+
 				except Exception:
 					frappe.log_error(frappe.get_traceback())
 
