@@ -115,7 +115,7 @@ def application(request):
 
 		frappe.destroy()
 		
-	response.headers['Access-Control-Allow-Origin'] = '*'
+	response.headers['Access-Control-Allow-Origin'] = 'https://on-our-way-webapp.netlify.app/'
 
 	return response
 
