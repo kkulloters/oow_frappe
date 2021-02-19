@@ -114,6 +114,8 @@ def application(request):
 			response.headers.extend(frappe.local.rate_limiter.headers())
 
 		frappe.destroy()
+		
+	response.headers['Access-Control-Allow-Origin'] = '*'
 
 	return response
 
