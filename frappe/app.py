@@ -115,7 +115,7 @@ def application(request):
 
 		frappe.destroy()
 
-	response.headers['Access-Control-Allow-Origin'] = 'https://on-our-way-webapp.netlify.app'
+	# response.headers['Access-Control-Allow-Origin'] = 'https://on-our-way-webapp.netlify.app'
 
 	return response
 
@@ -215,6 +215,7 @@ def handle_exception(e):
 		response = frappe.website.render.render("message",
 			http_status_code=http_status_code)
 
+	print(response)
 	return response
 
 def after_request(rollback):
