@@ -86,6 +86,7 @@ def application(request):
 
 	else:
 		rollback = after_request(rollback)
+		print(rollback)
 
 	finally:
 		if frappe.local.request.method in ("POST", "PUT") and frappe.db and rollback:
@@ -114,8 +115,6 @@ def application(request):
 			response.headers.extend(frappe.local.rate_limiter.headers())
 
 		frappe.destroy()
-
-	# response.headers['Access-Control-Allow-Origin'] = 'https://on-our-way-webapp.netlify.app'
 
 	return response
 
@@ -215,7 +214,8 @@ def handle_exception(e):
 		response = frappe.website.render.render("message",
 			http_status_code=http_status_code)
 
-	print(response)
+	response.headers['Access-Control-Allow-Origin'] = 'https://on-our-way-webapp.netlify.app'
+	print(response.__dict__)
 	return response
 
 def after_request(rollback):
