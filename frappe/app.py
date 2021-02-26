@@ -215,7 +215,6 @@ def handle_exception(e):
 			http_status_code=http_status_code)
 
 	response.headers['Access-Control-Allow-Origin'] = 'https://on-our-way-webapp.netlify.app'
-	print(response.__dict__)
 	return response
 
 def after_request(rollback):
