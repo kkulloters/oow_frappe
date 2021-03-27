@@ -214,7 +214,7 @@ def handle_exception(e):
 		response = frappe.website.render.render("message",
 			http_status_code=http_status_code)
 
-	response.headers['Access-Control-Allow-Origin'] = 'https://on-our-way-webapp.netlify.app'
+	response.headers['Access-Control-Allow-Origin'] = frappe.db.get_value("OnOurWay Settings", "OnOurWay Settings", 'url')
 	return response
 
 def after_request(rollback):
