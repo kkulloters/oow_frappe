@@ -1,14 +1,86 @@
-<p>{{_("Dear")}} {{ first_name }}{% if last_name %} {{ last_name}}{% endif %},</p>
-<p>{{_("A new account has been created for you at {0}").format("https://on-our-way-webapp.netlify.app/")}}.</p>
-<p>{{_("Your login id is")}}: <b>{{ user }}</b>
-<p>{{_("Click on the link below to complete your registration and set a new password")}}.</p>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+	.val {
+		font-size: 15px;
+	}
 
-<p style="margin: 30px 0px;">
-	<a href="{{ link }}" rel="nofollow" style="padding: 8px 20px; background-color: #7575ff; color: #fff; border-radius: 4px; text-decoration: none; line-height: 1; border-bottom: 3px solid rgba(0, 0, 0, 0.2); font-size: 14px; font-weight: 200;">{{ _("Complete Registration") }}</a>
-</p>
+	.txt-color {
+		color: rgb(82,122,109);
+		font-family: Inter, serif;
+	}
 
+	.item {
+		padding: 5px 0 5px 3px;
+		border: 1px solid #3a7581;
+	}
 
-<br>
-<p>{{_("Thank you")}},<br>
-{{_("The On Our Way Team")}}</p>
-<br>
+	p{
+		line-height: 1.3;
+		letter-spacing: 0.5px;
+	}
+	ul{
+		color: rgb(82,122,109);
+		font-family: Inter, serif;
+	}
+
+	.txt-color {
+		color: rgb(82,122,109);
+		font-family: Inter, serif;
+	}
+</style>
+
+<table  align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;" >
+	<tr>
+		<tr>
+			<th><img src="https://erpnext.onourway.ca/files/theFinalLetterHeader.png" class="logo" alt="On Our Way"/></th>
+		</tr>
+	</tr>
+	<tr>
+		<td colspan='2' bgcolor="#f0f6f9" style="padding: 40px 30px 15px 30px; color: rgb(82,122,109);">
+			<h3 class="txt-color">Finish setting up your On Our Way account</h3>
+			<p class="txt-color">Easy peasy:</p>
+			<ul>
+				<li class="txt-color">Click the link below to verify your email.</li>
+				<li class="txt-color">Choose a password for your On Our Way account.</li>
+			</ul>
+			<p style="margin: 30px 0px;">
+				<a href="{{ link }}" class="txt-color" rel="nofollow" style="padding: 8px 20px; background-color: #529d99; color: #fff; border-radius: 4px; text-decoration: none; line-height: 1; border-bottom: 3px solid rgba(0, 0, 0, 0.2); font-size: 14px; font-weight: 200;">{{ _("Verify Email") }}</a>
+			</p>
+			<p class="txt-color">If you’re unable to click the link above, simply copy and paste the below URL into your browser:</p>
+			<!-- <insert long url link> -->
+			<a class="txt-color" href="{{ link }}">{{ link }}</a>
+			<p class="txt-color">Thank you for letting us help you <strong>#takebackyourday</strong></p>
+			<br>
+
+			<p class="txt-color val" style="text-align: justify; text-justify: inter-word;">
+				<b>Need help?</b><br>
+				Our super friendly team is here for you.<br>
+				Reply to this email, or call us at 365-228-5205.<br>
+				We look forward to speaking with you!
+
+			</p>
+        </td>
+	</tr>
+
+	<tr>
+		<td><img src="https://erpnext.onourway.ca/files/theFinalFooter.png" class="logo" alt="On Our Way"/></td>
+	</tr>
+	<tr>
+		<td>
+			<p class="txt-color val" style="text-align: center; text-justify: inter-word;">
+
+				Privacy + Security Policy: <a href="https://onourway.ca/privacy" style="color: rgb(82,122,109);">View our Privacy and Security Policy</a> <br>
+
+				On Our Way, Oakville, Ontario, Canada <br>
+
+				<a href="https://onourway.ca" style="color: rgb(82,122,109);">Onourway.ca</a><br>
+
+				© 2021. All rights reserved. Proudly Canadian 🇨🇦<br>
+
+			</p>
+		</td>
+	</tr>
+
+</table>
+
