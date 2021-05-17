@@ -260,7 +260,7 @@ class User(Document):
 
 	def password_reset_mail(self, link):
 		self.send_login_mail(_("Password Reset"),
-			"password_reset", {"link": link}, now=True)
+			"password_reset", {"link": link, "user": self.full_name}, now=True)
 
 	def send_welcome_mail_to_user(self):
 		from frappe.utils import get_url
