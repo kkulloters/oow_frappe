@@ -804,12 +804,12 @@ def sign_up(email, full_name, redirect_to):
 @frappe.whitelist(allow_guest=True)
 def reset_password(user):
 	if user=="Administrator":
-		return 'not allowed'
+		return frappe.throw(_('Not allowed to change password'))
 
 	try:
 		user = frappe.get_doc("User", user)
 		if not user.enabled:
-			return 'disabled'
+			return frappe.throw(_('This user is inactive'))
 
 		user.validate_reset_password()
 		user.reset_password(send_email=True)
@@ -818,7 +818,7 @@ def reset_password(user):
 
 	except frappe.DoesNotExistError:
 		frappe.clear_messages()
-		return 'not found'
+		return frappe.throw(_('User not found'))
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
