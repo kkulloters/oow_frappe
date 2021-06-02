@@ -150,7 +150,15 @@ class LoginManager:
 	def get_user_info(self, resume=False):
 		self.info = frappe.db.get_value("User", self.user,
 			["user_type", "first_name", "last_name", "user_image", "mobile_no"], as_dict=1)
+
 		self.role = get_role(self.user)
+		if self.role == "Customer":
+			customer = frappe.db.get_value("Customer", {"email_id": self.user}, "name")
+			self.info.update({"primary_name": customer})
+		elif self.role == "Cleaner":
+			cleaner = frappe.db.get_value("Cleaner", {"email": self.user}, "name")
+			self.info.update({"primary_name": cleaner})
+
 		self.secret = frappe.get_doc("User", self.user)
 
 		self.user_type = self.info.user_type
@@ -184,7 +192,8 @@ class LoginManager:
 								"full_name":self.full_name,
 								"phone_number": self.info.mobile_no,
 								"first_name": self.info.first_name,
-								"last_name": self.info.last_name
+								"last_name": self.info.last_name,
+								"primary_name": self.info.primary_name
 						}
 			frappe.response["role"] = self.role
 			frappe.response["token"] = jwt_encoder(self.user)
