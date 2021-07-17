@@ -214,7 +214,8 @@ def handle_exception(e):
 		response = frappe.website.render.render("message",
 			http_status_code=http_status_code)
 
-	response.headers['Access-Control-Allow-Origin'] = frappe.db.get_value("OnOurWay Settings", "OnOurWay Settings", 'url')
+	url = frappe.db.get_single("OnOurWay Settings").url.split(",")
+	response.headers['Access-Control-Allow-Origin'] = url
 	return response
 
 def after_request(rollback):
