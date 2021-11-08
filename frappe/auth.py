@@ -159,7 +159,7 @@ class LoginManager:
 			cleaner = frappe.db.get_value("Cleaner", {"email": self.user}, "name")
 			self.info.update({"primary_name": cleaner})
 
-		self.secret = frappe.get_doc("User", self.user)
+		# self.secret = frappe.get_doc("User", self.user)
 
 		self.user_type = self.info.user_type
 
